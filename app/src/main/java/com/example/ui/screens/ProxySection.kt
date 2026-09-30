@@ -504,19 +504,6 @@ fun ProxySection(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Country Code
-                    OutlinedTextField(
-                        value = countryCode,
-                        onValueChange = { countryCode = it.take(2).uppercase() },
-                        label = { Text("Country Code (e.g. BD, US, SG, UK)") },
-                        placeholder = { Text("US") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // Dynamic Buttons (Save Profile, Start Connection, Test Proxy)
@@ -798,7 +785,7 @@ fun ProxySection(
                                                     }
                                                 }
                                                 Text(
-                                                    text = "${profileItem.host}:${profileItem.port} • ${profileItem.countryCode}",
+                                                    text = "${profileItem.host}:${profileItem.port}",
                                                     fontSize = 11.sp,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
