@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Daily Shortcut",
+  "description": "Daily Shortcut - All-in-one productivity app with floating overlay, 6-column Excel fast paste with duplicate detection, instant 2FA, A-to-Z worldwide name generator, clean data automation, and proxy switcher.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

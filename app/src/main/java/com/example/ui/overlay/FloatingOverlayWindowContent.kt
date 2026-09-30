@@ -195,9 +195,9 @@ fun FloatingOverlayWindowContent(
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                Color(0xF50D1322),
-                                Color(0xFA111A2E),
-                                Color(0xF50A0E18)
+                                Color(0xF20F1626),
+                                Color(0xEB131B2E),
+                                Color(0xF20B101C)
                             )
                         )
                     )
@@ -205,99 +205,64 @@ fun FloatingOverlayWindowContent(
                         1.5.dp,
                         Brush.verticalGradient(
                             listOf(
-                                Color(0xCC00E5FF),
-                                Color(0x552979FF),
-                                Color(0x9900E5FF)
+                                Color(0x9900E5FF),
+                                Color(0x442979FF),
+                                Color(0x6600E5FF)
                             )
                         ),
                         dockChassisShape
                     )
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .widthIn(min = 140.dp, max = 152.dp)
+                        .widthIn(min = 124.dp, max = 138.dp)
                         .heightIn(max = 560.dp)
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 7.dp, vertical = 7.dp)
+                        .padding(horizontal = 6.dp, vertical = 6.dp)
                         .testTag("floating_edge_tabs_column")
                 ) {
-                    // Top Control Bar: Drag Grip + Switch Side (⇄) + Close (✕)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Sleek Micro Side Switcher
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.12f))
-                                .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape)
-                                .clickable { OverlayStateManager.toggleDockSide() }
-                                .testTag("tab_switch_side")
-                        ) {
-                            Text(
-                                text = "⇄",
-                                color = Color.White,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                    // Sleek Drag Grip Header Handle
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .width(28.dp)
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Color.White.copy(alpha = 0.35f))
+                    )
 
-                        // Drag Grip Handle Pill
-                        Box(
-                            modifier = Modifier
-                                .width(32.dp)
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(2.dp))
-                                .background(Color.White.copy(alpha = 0.45f))
-                        )
+                    Spacer(modifier = Modifier.height(2.dp))
 
-                        // Sleek Micro Close / Minimize Button
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFD32F2F).copy(alpha = 0.35f))
-                                .border(1.dp, Color(0xFFFF5252).copy(alpha = 0.6f), CircleShape)
-                                .clickable { OverlayStateManager.toggleEdgeBarMinimized() }
-                                .testTag("tab_close")
-                        ) {
-                            Text(
-                                text = "✕",
-                                color = Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    // Optional Quick Proxy Bar on top of Grid
+                    // 1. PROXY TAB (Original Rectangular Tactile Button)
                     GlossyTactileButton(
                         title = if (state.proxyState.isConnected) "Proxy ✓" else "Proxy",
                         icon = Icons.Default.Bolt,
                         brush = gradProxy,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = tabShape,
                         onClick = {
                             OverlayStateManager.toggleProxyConnection(context)
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(28.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         testTag = "tab_proxy"
                     )
 
-                    // ════════════════════════════════════════════════════════
-                    // 3x3 CIRCULAR GRID ("3x3 goal kore show korbe")
-                    // Row 1: Col A, Col B, Col C
-                    // Row 2: Col D, Col E, Col F
-                    // Row 3: 2FA, NAME, CLEAN
-                    // ════════════════════════════════════════════════════════
+                    // 2. NAME GENERATOR TAB (Original Rectangular Tactile Button)
+                    GlossyTactileButton(
+                        title = "Name",
+                        icon = Icons.Default.Person,
+                        brush = gradName,
+                        shape = tabShape,
+                        onClick = {
+                            OverlayStateManager.generateAndCopyRealtimeName(context)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        testTag = "tab_name"
+                    )
+
+                    // 3. EXCEL COLUMNS IN 3-COLUMN CIRCULAR GRID ("gol boler moto")
+                    // Supports up to 6 columns: Row 1 has A, B, C; Row 2 has D, E, F
                     val rowA = state.columnRowMap["A"] ?: 1
                     val rowB = state.columnRowMap["B"] ?: 1
                     val rowC = state.columnRowMap["C"] ?: 1
@@ -305,7 +270,7 @@ fun FloatingOverlayWindowContent(
                     val rowE = state.columnRowMap["E"] ?: 1
                     val rowF = state.columnRowMap["F"] ?: 1
 
-                    // GRID ROW 1: A, B, C
+                    // Grid Row 1: Columns A, B, C
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -325,112 +290,184 @@ fun FloatingOverlayWindowContent(
                             },
                             testTag = "tab_col_b"
                         )
-                        SheetCircularButton(
-                            title = "C$rowC",
-                            onClick = {
-                                OverlayStateManager.fastPasteToSheetColumn(context, "C")
-                            },
-                            testTag = "tab_col_c"
-                        )
+                        if (state.columnCount >= 3) {
+                            SheetCircularButton(
+                                title = "C$rowC",
+                                onClick = {
+                                    OverlayStateManager.fastPasteToSheetColumn(context, "C")
+                                },
+                                testTag = "tab_col_c"
+                            )
+                        }
                     }
 
-                    // GRID ROW 2: D, E, F
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SheetCircularButton(
-                            title = "D$rowD",
-                            onClick = {
-                                OverlayStateManager.fastPasteToSheetColumn(context, "D")
-                            },
-                            testTag = "tab_col_d"
-                        )
-                        SheetCircularButton(
-                            title = "E$rowE",
-                            onClick = {
-                                OverlayStateManager.fastPasteToSheetColumn(context, "E")
-                            },
-                            testTag = "tab_col_e"
-                        )
-                        SheetCircularButton(
-                            title = "F$rowF",
-                            onClick = {
-                                OverlayStateManager.fastPasteToSheetColumn(context, "F")
-                            },
-                            testTag = "tab_col_f"
-                        )
+                    // Grid Row 2: Columns D, E, F (if 4+ columns selected)
+                    if (state.columnCount >= 4) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SheetCircularButton(
+                                title = "D$rowD",
+                                onClick = {
+                                    OverlayStateManager.fastPasteToSheetColumn(context, "D")
+                                },
+                                testTag = "tab_col_d"
+                            )
+                            if (state.columnCount >= 5) {
+                                SheetCircularButton(
+                                    title = "E$rowE",
+                                    onClick = {
+                                        OverlayStateManager.fastPasteToSheetColumn(context, "E")
+                                    },
+                                    testTag = "tab_col_e"
+                                )
+                            }
+                            if (state.columnCount >= 6) {
+                                SheetCircularButton(
+                                    title = "F$rowF",
+                                    onClick = {
+                                        OverlayStateManager.fastPasteToSheetColumn(context, "F")
+                                    },
+                                    testTag = "tab_col_f"
+                                )
+                            }
+                        }
                     }
 
-                    // GRID ROW 3: 2FA, NAME, CLEAN (Matching Circular Aesthetic!)
+                    // 4. 2FA TAB (Displays '2FA' + code + timer cleanly on one line)
+                    val totpFormatted = state.totpResult?.formattedCode
                     val totpSec = state.totpResult?.remainingSeconds
-                    val title2Fa = if (totpSec != null) "2FA\n${totpSec}s" else "2FA"
-
-                    Row(
+                    val is2FaActive = !totpFormatted.isNullOrEmpty() && totpSec != null
+                    val title2Fa = if (is2FaActive) {
+                        "2FA ${totpFormatted!!.replace(" ", "")} (${totpSec}s)"
+                    } else {
+                        "2FA"
+                    }
+                    GlossyTactileButton(
+                        title = title2Fa,
+                        icon = Icons.Default.Lock,
+                        brush = grad2Fa,
+                        shape = tabShape,
+                        fontSize = if (is2FaActive) 9.2.sp else 12.sp,
+                        horizontalPadding = if (is2FaActive) 4.dp else 9.dp,
+                        onClick = {
+                            OverlayStateManager.triggerOverlay2FaPaste(context)
+                        },
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // 1. 2FA Circular Button
-                        UtilityCircularButton(
-                            title = title2Fa,
-                            icon = Icons.Default.Lock,
-                            accentColor = Color(0xFFFF5252),
-                            gradient = Brush.radialGradient(
-                                colors = listOf(Color(0xFFFF5252), Color(0xFFD50000), Color(0xFF310707))
-                            ),
-                            onClick = {
-                                OverlayStateManager.triggerOverlay2FaPaste(context)
-                            },
-                            testTag = "tab_2fa"
-                        )
+                        testTag = "tab_2fa"
+                    )
 
-                        // 2. NAME Circular Button
-                        UtilityCircularButton(
-                            title = "Name",
-                            icon = Icons.Default.Person,
-                            accentColor = Color(0xFF69F0AE),
-                            gradient = Brush.radialGradient(
-                                colors = listOf(Color(0xFF69F0AE), Color(0xFF00C853), Color(0xFF0A2B12))
-                            ),
-                            onClick = {
-                                OverlayStateManager.generateAndCopyRealtimeName(context)
-                            },
-                            testTag = "tab_name"
-                        )
+                    // 5. CUSTOM USER APPS (Via, Dual, FB, Multiple Space)
+                    if (state.customAppShortcuts.isNotEmpty()) {
+                        if (state.customAppShortcuts.size > 1) {
+                            AppShortcutsGridBox(
+                                shortcuts = state.customAppShortcuts,
+                                context = context,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        } else {
+                            val shortcut = state.customAppShortcuts[0]
+                            val baseColor = try {
+                                Color(android.graphics.Color.parseColor(shortcut.colorHex))
+                            } catch (_: Exception) {
+                                Color(0xFF00ACC1)
+                            }
+                            val customBrush = Brush.verticalGradient(
+                                listOf(
+                                    baseColor.copy(alpha = 0.9f),
+                                    baseColor,
+                                    Color(0xFF102027)
+                                )
+                            )
+                            GlossyTactileButton(
+                                title = shortcut.appName,
+                                iconLabel = "🚀",
+                                brush = customBrush,
+                                shape = tabShape,
+                                onClick = {
+                                    OverlayStateManager.launchAppShortcut(context, shortcut)
+                                },
+                                onLongClick = {
+                                    OverlayStateManager.closeAppShortcut(context, shortcut)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                testTag = "tab_custom_${shortcut.appName}"
+                            )
+                        }
+                    }
 
-                        // 3. CLEAN / CLEAR Circular Button
-                        UtilityCircularButton(
+                    // 6. CLEAR DATA / CLEAN TAB (Original Rectangular Tactile Button)
+                    if (state.selectedClearDataApps.isNotEmpty()) {
+                        if (state.selectedClearDataApps.size > 1) {
+                            ClearDataGridBox(
+                                apps = state.selectedClearDataApps,
+                                brush = gradClean,
+                                context = context,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        } else {
+                            val appItem = state.selectedClearDataApps[0]
+                            GlossyTactileButton(
+                                title = appItem.appName.take(10),
+                                iconLabel = "🧹",
+                                brush = gradClean,
+                                shape = tabShape,
+                                onClick = {
+                                    OverlayStateManager.executeClearDataForApp(context, appItem)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                testTag = "tab_app_clean_${appItem.packageName}"
+                            )
+                        }
+                    } else {
+                        GlossyTactileButton(
                             title = "Clean",
                             iconLabel = "🧹",
-                            accentColor = Color(0xFF18FFFF),
-                            gradient = Brush.radialGradient(
-                                colors = listOf(Color(0xFF18FFFF), Color(0xFF00B8D4), Color(0xFF062B33))
-                            ),
+                            brush = gradClean,
+                            shape = tabShape,
                             onClick = {
-                                if (state.selectedClearDataApps.isNotEmpty()) {
-                                    OverlayStateManager.executeClearDataForApp(context, state.selectedClearDataApps[0])
-                                } else {
-                                    OverlayStateManager.executeSelfClearData(context)
-                                }
+                                OverlayStateManager.executeSelfClearData(context)
                             },
+                            modifier = Modifier.fillMaxWidth(),
                             testTag = "tab_clean"
                         )
                     }
 
-                    // CUSTOM USER APPS (Via, Dual, FB, Multiple Space) if user configured any
-                    if (state.customAppShortcuts.isNotEmpty()) {
-                        AppShortcutsGridBox(
-                            shortcuts = state.customAppShortcuts,
-                            context = context,
-                            modifier = Modifier.fillMaxWidth()
+                    // 7. DOCK SIDE SWITCHER (⇄) & CLOSE BUTTON (✕) SIDE BY SIDE IN 2 COLUMNS
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        GlossyTactileButton(
+                            title = "⇄",
+                            icon = Icons.Default.SwapHoriz,
+                            brush = gradSwitch,
+                            shape = tabShape,
+                            onClick = {
+                                OverlayStateManager.toggleDockSide()
+                            },
+                            modifier = Modifier.weight(1f),
+                            testTag = "tab_switch_side"
+                        )
+
+                        GlossyTactileButton(
+                            title = "✕",
+                            icon = Icons.Default.Close,
+                            brush = gradClose,
+                            shape = tabShape,
+                            onClick = {
+                                OverlayStateManager.toggleEdgeBarMinimized()
+                            },
+                            modifier = Modifier.weight(1f),
+                            testTag = "tab_close"
                         )
                     }
 
                     // Proxy status: country, IP & connection duration under tabs ONLY when connected!
                     if (state.proxyState.isConnected) {
-                        Spacer(modifier = Modifier.height(2.dp))
+                        Spacer(modifier = Modifier.height(3.dp))
                         ProxyInfoStatusPill(state = state)
                     }
                 }
@@ -452,6 +489,8 @@ fun GlossyTactileButton(
     onLongClick: (() -> Unit)? = null,
     icon: ImageVector? = null,
     iconLabel: String? = null,
+    fontSize: androidx.compose.ui.unit.TextUnit = 12.sp,
+    horizontalPadding: androidx.compose.ui.unit.Dp = 9.dp,
     modifier: Modifier = Modifier,
     testTag: String = ""
 ) {
@@ -476,7 +515,7 @@ fun GlossyTactileButton(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
-            .padding(horizontal = 9.dp, vertical = 2.dp)
+            .padding(horizontal = horizontalPadding, vertical = 2.dp)
             .testTag(testTag)
     ) {
         // Specular Top Shine Overlay (Glass reflection)
@@ -506,7 +545,7 @@ fun GlossyTactileButton(
                     tint = Color.White,
                     modifier = Modifier.size(15.dp)
                 )
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(4.dp))
             } else if (iconLabel != null) {
                 Text(
                     text = iconLabel,
@@ -519,8 +558,8 @@ fun GlossyTactileButton(
                 text = title,
                 color = Color.White,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 12.sp,
-                letterSpacing = 0.2.sp,
+                fontSize = fontSize,
+                letterSpacing = if (fontSize < 12.sp) (-0.3).sp else 0.2.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center
@@ -538,14 +577,8 @@ fun ProxyInfoStatusPill(state: OverlayUiState) {
     val proxy = state.proxyState
     if (!proxy.isConnected) return
 
-    val countryStr = when (proxy.countryCode.uppercase()) {
-        "BD" -> "🇧🇩 BD"
-        "US" -> "🇺🇸 US"
-        "GB" -> "🇬🇧 UK"
-        "CA" -> "🇨🇦 CA"
-        "IN" -> "🇮🇳 IN"
-        else -> proxy.countryCode.ifEmpty { "BD" }
-    }
+    val countryOpt = com.example.util.NameGenerator.getCountryOption(proxy.countryCode)
+    val countryStr = "${countryOpt.flag} ${countryOpt.code}"
     val timeStr = OverlayStateManager.formatDuration(proxy.connectedDurationSeconds)
     val ipStr = proxy.ipAddress.ifEmpty { proxy.host }
 
@@ -582,9 +615,12 @@ fun ProxyInfoStatusPill(state: OverlayUiState) {
 }
 
 /**
- * Ultra-Premium 3D Metallic Circular Button for Excel Columns (A-F)
- * Compact 38dp size, platinum chrome radial gradient, crisp white glowing border,
- * and high-contrast vibrant hot pink text matching the user's design.
+ * Ultra-Premium, Original Cosmic Obsidian & Jewel-Rimmed Circular Ball Button.
+ * Distinctive, luxurious multi-layered sphere:
+ * - Liquid Obsidian dark titanium spherical gradient core.
+ * - Dynamic jewel-tone neon glowing rim uniquely accented per column (A: Cyan, B: Gold, C: Amethyst, D: Emerald, E: Coral, F: Sapphire).
+ * - Specular curved crescent glass reflection at top.
+ * - Matching vivid glowing typography for column names & active row indices (A1, B1, C1...).
  */
 @Composable
 fun SheetCircularButton(
@@ -593,42 +629,115 @@ fun SheetCircularButton(
     modifier: Modifier = Modifier,
     testTag: String = ""
 ) {
+    // Dynamic luxury theme per column letter
+    val colKey = title.take(1).uppercase()
+    val (accentGlow, rimBorder, textColor) = when (colKey) {
+        "A" -> Triple(
+            Color(0xFF00E5FF),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFF00E5FF),
+                    Color(0xFF80D8FF),
+                    Color(0xFF0091EA),
+                    Color(0xFF00E5FF)
+                )
+            ),
+            Color(0xFF00F0FF) // Electric Cyber Cyan
+        )
+        "B" -> Triple(
+            Color(0xFFFFD700),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFFFFD700),
+                    Color(0xFFFFEA00),
+                    Color(0xFFFF8F00),
+                    Color(0xFFFFD700)
+                )
+            ),
+            Color(0xFFFFD700) // Pure Solar Gold
+        )
+        "C" -> Triple(
+            Color(0xFFE040FB),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFFE040FB),
+                    Color(0xFFEA80FC),
+                    Color(0xFFAA00FF),
+                    Color(0xFFE040FB)
+                )
+            ),
+            Color(0xFFF06292) // Luminous Rose Amethyst
+        )
+        "D" -> Triple(
+            Color(0xFF00E676),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFF00E676),
+                    Color(0xFFB9F6CA),
+                    Color(0xFF00C853),
+                    Color(0xFF00E676)
+                )
+            ),
+            Color(0xFF00E676) // Radiant Cyber Emerald
+        )
+        "E" -> Triple(
+            Color(0xFFFF5252),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFFFF5252),
+                    Color(0xFFFF8A80),
+                    Color(0xFFD50000),
+                    Color(0xFFFF5252)
+                )
+            ),
+            Color(0xFFFF5252) // Vivid Sunset Coral
+        )
+        "F" -> Triple(
+            Color(0xFF448AFF),
+            Brush.sweepGradient(
+                listOf(
+                    Color(0xFF448AFF),
+                    Color(0xFF82B1FF),
+                    Color(0xFF2979FF),
+                    Color(0xFF448AFF)
+                )
+            ),
+            Color(0xFF448AFF) // Royal Azure Sapphire
+        )
+        else -> Triple(
+            Color(0xFF00E5FF),
+            Brush.linearGradient(listOf(Color(0xFF00E5FF), Color(0xFF7C4DFF))),
+            Color(0xFF00E5FF)
+        )
+    }
+
     Box(
         modifier = modifier
             .size(38.dp)
-            .shadow(4.dp, CircleShape)
+            .shadow(5.dp, CircleShape)
             .clip(CircleShape)
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFFFFFFFF),
-                        Color(0xFFE2E8F0),
-                        Color(0xFF94A3B8),
-                        Color(0xFF334155)
+                        Color(0xFF263238),
+                        Color(0xFF19222D),
+                        Color(0xFF101720),
+                        Color(0xFF0A0F16)
                     )
                 )
             )
-            .border(
-                1.5.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White,
-                        Color(0xFFCBD5E1),
-                        Color.White.copy(alpha = 0.9f)
-                    )
-                ),
-                CircleShape
-            )
+            .border(1.6.dp, rimBorder, CircleShape)
             .clickable(onClick = onClick)
             .testTag(testTag),
         contentAlignment = Alignment.Center
     ) {
-        // Specular top light reflex
+        // Specular top light reflex (Glass sphere reflection)
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .fillMaxWidth(0.7f)
+                .fillMaxWidth(0.72f)
                 .height(11.dp)
+                .clip(CircleShape)
                 .background(
                     Brush.verticalGradient(
                         listOf(Color.White.copy(alpha = 0.45f), Color.Transparent)
@@ -636,11 +745,20 @@ fun SheetCircularButton(
                 )
         )
 
+        // Subtle ambient inner glow from column accent
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(accentGlow.copy(alpha = 0.12f))
+        )
+
         Text(
             text = title,
-            color = Color(0xFFFF007F), // Vibrant hot pink exactly as in screenshot
+            color = textColor,
             fontWeight = FontWeight.Black,
             fontSize = 13.5.sp,
+            letterSpacing = (-0.3).sp,
             textAlign = TextAlign.Center
         )
     }
